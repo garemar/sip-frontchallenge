@@ -1,67 +1,77 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FormControl, Input, Button } from '@mui/material'
+import SendIcon from '@mui/icons-material/Send'
 import axios from 'axios'
 import '../SearchComponent/styles.css'
 import UserCard from '../CardComponent/UserCard'
-import { BsGithub } from 'react-icons/bs'
-
+import NoDataComponent from '../NoDataComponent/NoDataComponent'
 
 const Search = () => {
 
-  const [user, setUser] = useState('')
+  const [value, setValue] = useState('')
   const [data, setData] = useState([])
-  const [error, setError] = useState([])
+  const [error, setError] = useState(false)
+  const [showError, setShowError] = useState(false)
 
-  const apiURL = 'https://api.github.com/users/'
+  const apiURL = 'http://localhost:3010/api/users/'
 
-  const inputHandler = (e) => {
-    let userToLowerCase = e.target.value.toLowerCase()
-    setUser(userToLowerCase)
+  const handleChange = (e) => {
+    let valueToLowerCase = e.target.value.toLowerCase()
+    setValue(valueToLowerCase)
 
   }
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  }
 
-  const handleSubmit = (e) => {
-    let error = 0
-    e.preventDefault()
-    axios.get(apiURL + user).then((res => {
-      setData(res.data)
-      console.log('RES DATA: ', res.data)
-      setUser('')
-    })).catch((error) => {
-      setError(e)
+  useEffect(() => {
+    if (error === true) {
+      setShowError(true)
+      setData([])
+    }
+  }, [error])
+
+
+
+  const handleSubmit = () => {
+    axios.get(apiURL + value).then((res => {
+      setData(res.data.json)
+      if (res.data.json.message) {
+        setData([])
+        setError(true)
+      }
+    })).catch((e) => {
+      e.response.status === 404 ? setError(true) : setError(false)
     })
+    setValue('')
+    setShowError(false)
+    setError(false)
   }
 
   return (
     <>
       <div className='container'>
         <FormControl className="form-control" >
-          <BsGithub />
-          <Input id="my-input" aria-describedby="username" placeholder='Search a Github User' fullWidth onChange={inputHandler} />
-          <Button onClick={handleSubmit} >Search</Button>
+          <Input id="my-input" aria-describedby="username" placeholder='Search a Github User' fullWidth value={value} onChange={handleChange} onKeyPress={handleKeyPress} />
+          <Button onClick={handleSubmit} endIcon={<SendIcon />}>Search </Button>
+          {showError == true ? <NoDataComponent /> : ''}
           {data.length === 0 ? '' : <UserCard
             img={data.avatar_url}
             name={data.name}
             userName={data.login}
             link={data.html_url}
-            repos={data.public_repos}
+            repo={data.public_repos}
             followers={data.followers}
             following={data.following}
-            email={data.email}
-            company={data.company}
+            bio={data.bio}
           />}
         </FormControl>
       </div>
-      <div className='main'></div>
     </>
   )
-
 }
 
-/*{
-   data.length === 0 ? '' :<> <Card variant="outlined"> {data.login}</Card> 
-   <img src={data.avatar_url} alt="Imagen usuario github"></img>
-    <span>{data.name}</span></>
-   }*/
 export default Search;
