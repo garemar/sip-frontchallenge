@@ -13,7 +13,7 @@ const Search = () => {
   const [error, setError] = useState(false)
   const [showError, setShowError] = useState(false)
 
-  const apiURL = 'https://git-hub-users-u9my.vercel.app/users/'
+  const apiURL = 'https://git-hub-users-gules.vercel.app/users/'
 
   const handleChange = (e) => {
     let valueToLowerCase = e.target.value.toLowerCase()
