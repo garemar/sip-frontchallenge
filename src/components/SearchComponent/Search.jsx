@@ -44,7 +44,7 @@ const Search = () => {
         setError(true)
       }
     })).catch((e) => {
-      e.response.status === 404 ? setError(true) : setError(false)
+      console.log(e)
     })
     setValue('')
     setShowError(false)

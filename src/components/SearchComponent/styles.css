@@ -4,7 +4,7 @@
 
 body  {
   font-family: "Open Sans", sans-serif;
-  background-color: #0d1821;
+  background-color: red;
   background: linear-gradient(180deg, rgb(45, 50, 56), rgb(66, 77, 92));
   color: #dddddd;
   margin: 0;
